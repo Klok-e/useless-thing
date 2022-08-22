@@ -1,10 +1,12 @@
+#![feature(iter_intersperse)]
+
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 
 pub fn reverse_words(s: String) -> String {
     s.split_whitespace()
-        .map(|s: &str| s.chars().rev().chain(std::iter::once(' ')))
+        .map(|s: &str| s.chars().rev())
+        .intersperse( " ".chars().rev())
         .flatten()
-        .take(s.len())
         .collect::<String>()
 }
 
