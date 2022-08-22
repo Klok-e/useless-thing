@@ -1,16 +1,8 @@
-use std::{mem, str::from_utf8_unchecked};
+use std::mem;
 
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 
-
-
 pub fn reverse_words(mut s: String) -> String {
-    // s.split_whitespace()
-    //     .map(|s: &str| s.chars().rev().chain(std::iter::once(' ')))
-    //     .flatten()
-    //     .take(s.len())
-    //     .collect::<String>()
-
     unsafe {
         fn rev(b: &mut [u8]) {
             match b {
@@ -24,8 +16,8 @@ pub fn reverse_words(mut s: String) -> String {
         }
 
         let n = s.len();
-        let p = s.as_bytes_mut();
-        
+        let p: &mut [u8] = s.as_bytes_mut();
+
         let mut start = 0;
         for i in 1..n {
             if p[i] == b' ' {
@@ -33,7 +25,6 @@ pub fn reverse_words(mut s: String) -> String {
                 start = i + 1;
             }
         }
-
         rev(&mut p[start..n]);
 
         s

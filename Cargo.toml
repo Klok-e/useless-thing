@@ -12,3 +12,6 @@ name = "reverse_words"
 harness = false
 
 [dependencies]
+
+[profile.bench]
+lto = true
