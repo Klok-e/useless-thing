@@ -19,6 +19,7 @@ pub fn reverse_words(mut s: String) -> String {
         let p: &mut [u8] = s.as_bytes_mut();
 
         let mut start = 0;
+        p[n - 1];
         for i in 1..n {
             if p[i] == b' ' {
                 rev(&mut p[start..i]);
