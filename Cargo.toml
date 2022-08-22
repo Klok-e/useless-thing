@@ -13,5 +13,5 @@ harness = false
 
 [dependencies]
 
-# [profile.bench]
-# lto = "thin"
+[profile.bench]
+lto = true
