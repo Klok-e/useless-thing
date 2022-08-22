@@ -1,4 +1,4 @@
-use std::str::from_utf8_unchecked;
+use std::{mem, str::from_utf8_unchecked};
 
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 
@@ -11,24 +11,33 @@ pub fn reverse_words(mut s: String) -> String {
     //     .take(s.len())
     //     .collect::<String>()
 
-    let mut res = String::with_capacity(s.len());
-    let mut words = s.as_bytes()
-        //  Split bytes
-        .split(|&b| b == b' ')
-        .map(|bytes| unsafe { 
-            //  Convert the slice to a string wihtout checking
-           from_utf8_unchecked(bytes)
-    });
-    //  This reverses each individual words
-    if let Some(word) = words.next() { 
-        res.extend(word.chars().rev())
+    unsafe {
+        fn rev(b: &mut [u8]) {
+            match b {
+                [] => {}
+                [_] => {}
+                [h, rest @ .., t] => {
+                    mem::swap(h, t);
+                    rev(rest)
+                }
+            }
+        }
+
+        let n = s.len();
+        let p = s.as_bytes_mut();
+        
+        let mut start = 0;
+        for i in 1..n {
+            if p[i] == b' ' {
+                rev(&mut p[start..i]);
+                start = i + 1;
+            }
+        }
+
+        rev(&mut p[start..n]);
+
+        s
     }
-    //  Collect reversed words into a collection
-    for word in words { 
-        res.push(' ');
-        res.extend(word.chars().rev())
-    }
-    res
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
