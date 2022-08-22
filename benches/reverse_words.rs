@@ -1,17 +1,18 @@
-use std::mem;
-
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 
 pub fn reverse_words(mut s: String) -> String {
     unsafe {
         fn rev(b: &mut [u8]) {
-            match b {
-                [] => {}
-                [_] => {}
-                [h, rest @ .., t] => {
-                    mem::swap(h, t);
-                    rev(rest)
+            let mut start = 0;
+            let mut end = b.len() - 1;
+            while start < end {
+                unsafe {
+                    let tmp = *b.get_unchecked(start);
+                    *b.get_unchecked_mut(start) = *b.get_unchecked(end);
+                    *b.get_unchecked_mut(end) = tmp;
                 }
+                start += 1;
+                end -= 1;
             }
         }
 
