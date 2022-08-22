@@ -1,13 +1,34 @@
-#![feature(iter_intersperse)]
+use std::str::from_utf8_unchecked;
 
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 
-pub fn reverse_words(s: String) -> String {
-    s.split_whitespace()
-        .map(|s: &str| s.chars().rev())
-        .intersperse( " ".chars().rev())
-        .flatten()
-        .collect::<String>()
+
+
+pub fn reverse_words(mut s: String) -> String {
+    // s.split_whitespace()
+    //     .map(|s: &str| s.chars().rev().chain(std::iter::once(' ')))
+    //     .flatten()
+    //     .take(s.len())
+    //     .collect::<String>()
+
+    let mut res = String::with_capacity(s.len());
+    let mut words = s.as_bytes()
+        //  Split bytes
+        .split(|&b| b == b' ')
+        .map(|bytes| unsafe { 
+            //  Convert the slice to a string wihtout checking
+           from_utf8_unchecked(bytes)
+    });
+    //  This reverses each individual words
+    if let Some(word) = words.next() { 
+        res.extend(word.chars().rev())
+    }
+    //  Collect reversed words into a collection
+    for word in words { 
+        res.push(' ');
+        res.extend(word.chars().rev())
+    }
+    res
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
