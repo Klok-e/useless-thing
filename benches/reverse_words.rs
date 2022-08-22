@@ -19,14 +19,13 @@ pub fn reverse_words(mut s: String) -> String {
         let p: &mut [u8] = s.as_bytes_mut();
 
         let mut start = 0;
-        p[n - 1];
         for i in 1..n {
-            if p[i] == b' ' {
-                rev(&mut p[start..i]);
+            if *p.get_unchecked(i) == b' ' {
+                rev(p.get_unchecked_mut(start..i));
                 start = i + 1;
             }
         }
-        rev(&mut p[start..n]);
+        rev(&mut p.get_unchecked_mut(start..n));
 
         s
     }
